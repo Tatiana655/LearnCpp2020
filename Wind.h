@@ -104,6 +104,17 @@ public:
 		hLight.SetColor(hightlight);
 	}
 
+	bool check(int cx, int cy)
+	{
+		vector<int> x = bBase.GetX();
+		vector<int> y = bBase.GetY();
+		if (((x[0] <= cx <= x[1]) || (x[1] <= cx <= x[0])) && ((y[0] <= cy <= y[1]) || (y[1] <= cy <= y[0])))
+		{
+			return true;
+		}
+		return false;
+	}
+	
 	void PrintBut(HDC hdc) { bBase.PrintRect(hdc); }
 	void PrintHigthBut(HDC hdc) { hLight.PrintRect(hdc); }
 };
@@ -122,7 +133,17 @@ public:
 	void PrintMenu(HDC hdc) { mBase.PrintRect(hdc); }
 
 	void PrintOpt(HDC hdc) { for (auto w : opt) w.PrintRect(hdc); }
-
+	
+	bool check(int cx, int cy)
+	{
+		vector<int> x = mBase.GetX();
+		vector<int> y = mBase.GetY();
+		if (((x[0] <= cx <= x[1]) || (x[1] <= cx <= x[0])) && ((y[0] <= cy <= y[1]) || (y[1] <= cy <= y[0])))
+		{
+			return true;
+		}
+		return false;
+	}
 };
 
 class Window
@@ -143,6 +164,14 @@ public:
 	void PrintWindow(HDC hdc);
 
 	void Change(int cx, int cy, HDC hdc);
+	
+	bool check(int cx, int cy)
+	{
+		vector<int> x = wBase.GetX();
+		vector<int> y = wBase.GetY();
+		if (((x[0] <= cx <= x[1]) || (x[1] <= cx <= x[0])) && ((y[0] <= cy <= y[1]) || (y[1] <= cy <= y[0]))) return true;
+		return false;
+	}
 };
 
 class System
