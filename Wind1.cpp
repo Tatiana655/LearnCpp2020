@@ -37,22 +37,13 @@ void Window::Change(int cx, int cy, HDC hdc)
 {
 	for (auto w : but)
 	{
-		vector<int> x = w.GetBBase().GetX();
-		vector<int> y = w.GetBBase().GetY();
-		if (((x[0] <= cx <= x[1]) || (x[1] <= cx <= x[0])) && ((y[0] <= cy <= y[1]) || (y[1] <= cy <= y[0])))
-		{
-			w.PrintHigthBut(hdc);
-		}
+		if (w.check(cx, cy) == true) w.PrintHigthBut(hdc);
 	}
 
 	for (auto w : menu)
 	{
-		vector<int> x = w.GetMBase().GetX();
-		vector<int> y = w.GetMBase().GetY();
-		if (((x[0] <= cx <= x[1]) || (x[1] <= cx <= x[0])) && ((y[0] <= cy <= y[1]) || (y[1] <= cy <= y[0])))
-		{
-			w.PrintOpt(hdc);
-		}
+
+		if (w.check(cx, cy) == true) w.PrintOpt(hdc);
 	}
 }
 
@@ -60,9 +51,8 @@ void System::Change(int cx, int cy, HDC hdc)
 {
 	for (auto u : w)
 	{
-		vector<int> x = u.GetWBase().GetX();
-		vector<int> y = u.GetWBase().GetY();
-		if (((x[0] <= cx <= x[1]) || (x[1] <= cx <= x[0])) && ((y[0] <= cy <= y[1]) || (y[1] <= cy <= y[0]))) u.Change(cx, cy, hdc);
+		if(u.check(cx,cy))
+			u.Change(cx, cy, hdc);
 	}
 }
 
