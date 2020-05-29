@@ -34,7 +34,7 @@ public:
 		FillRect(hdc, &l, hBrush);
 	}
 
-	int check(Pos p) { return pos.check(p); }
+	int check(Pos& p) { return pos.check(p); }
 
 	//print // update
 };
@@ -57,5 +57,5 @@ public:
 		bullets.push_back(b);
 	}
 
-	int checkBullets(Pos p);
+	int checkBullets(Pos& p);
 };
