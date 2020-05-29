@@ -26,7 +26,7 @@ public:
 		return v;
 	}
 
-	int check(Pos p)
+	int check(Pos& p)
 	{
 		int cx = p.GetX();
 		int cy = p.GetY();
