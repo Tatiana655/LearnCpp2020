@@ -18,7 +18,7 @@ class Alien : public StdObject
 	bool alive;
 	int speed;
 public:
-	Alien(Pos p)
+	Alien(Pos& p)
 	{
 		pos = p;
 		alive = true;
