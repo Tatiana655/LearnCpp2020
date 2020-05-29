@@ -13,7 +13,7 @@ int Field :: Update(HDC hdc/*, int r*/)
 
 	for (auto& a : AllAliens)
 	{
-		if (a.Alive() == true)
+		if (a.Alive())
 		{
 			win++;
 			a.HorizonAlien(hdc);
