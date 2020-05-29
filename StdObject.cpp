@@ -26,7 +26,7 @@ void StdObject::UpdateBullets(HDC hdc)
 	}
 }
 
-int StdObject::checkBullets(Pos p)
+int StdObject::checkBullets(Pos& p)
 {
 	//for (auto b : bullets)
 	vector<Bullet>::iterator it = bullets.begin();
