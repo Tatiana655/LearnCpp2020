@@ -1,6 +1,6 @@
 #include "Brush.h"
 
-void Pen::Print(HDC hdc, Field& field, const Pos& p, const Pos& p2)
+void Pen::Print(HDC hdc, Field& field, int size, int koef, const Pos& p, const Pos& p2)
 {
 	HBRUSH hBrush = CreateSolidBrush(color);
 	SelectObject(hdc, hBrush);
@@ -10,12 +10,15 @@ void Pen::Print(HDC hdc, Field& field, const Pos& p, const Pos& p2)
 	Ellipse(hdc, x - size / 2, y - size / 2, x + size / 2, y + size / 2);
 	DeleteObject(hBrush);
 	DeleteObject(hPen);
+	x = x / koef;
+	y = y / koef;
+	int size1 = size / koef;
 
-	for (int i = ((y - size / 2) > 0 ? (y - size / 2) : 0); i < (y + size / 2); i++) //уравнение круга
+	for (int i = ((y - size1 / 2) > 0 ? (y - size1 / 2) : 0); i < (y + size1 / 2); i++) //уравнение круга
 	{
-		for (int j = ((x - size / 2) > 0 ? x - size / 2 : 0); j < x + size / 2; j++)
+		for (int j = ((x - size1 / 2) > 0 ? x - size1 / 2 : 0); j < x + size1 / 2; j++)
 		{
-			if ((i >= 0) && (j >= 0) && (i < W_SIZE) && (j < W_SIZE) && ((x - j) * (x - j) + (y - i) * (y - i) < size * size / 4))
+			if ((i >= 0) && (j >= 0) && (i < W_SIZE) && (j < W_SIZE) && ((x - j) * (x - j) + (y - i) * (y - i) < size1 * size1 / 4))
 			{
 				field[j][i] = color;
 			}
@@ -23,7 +26,7 @@ void Pen::Print(HDC hdc, Field& field, const Pos& p, const Pos& p2)
 	}
 }
 
-void Eraser::Print(HDC hdc, Field& field, const Pos& p, const Pos& p2)
+void Eraser::Print(HDC hdc, Field& field, int size, int koef, const Pos& p, const Pos& p2)
 {
 	HBRUSH hBrush;
 	int x = p.GetX();
@@ -33,9 +36,13 @@ void Eraser::Print(HDC hdc, Field& field, const Pos& p, const Pos& p2)
 	FillRect(hdc, &l, hBrush);
 	DeleteObject(hBrush);
 
-	for (int i = ((y - size / 2) > 0 ? (y - size / 2) : 0); i < (y + size / 2); i++)
+	x = x / koef;
+	y = y / koef;
+	int size1 = size / koef;
+
+	for (int i = ((y - size1 / 2) > 0 ? (y - size1 / 2) : 0); i < (y + size1 / 2); i++)
 	{
-		for (int j = ((x - size / 2) > 0 ? x - size / 2 : 0); j < x + size / 2; j++)
+		for (int j = ((x - size1 / 2) > 0 ? x - size1 / 2 : 0); j < x + size1 / 2; j++)
 		{
 			if ((i >= 0) && (j >= 0) && (i < W_SIZE) && (j < W_SIZE))
 			{
@@ -45,7 +52,7 @@ void Eraser::Print(HDC hdc, Field& field, const Pos& p, const Pos& p2)
 	}
 }
 
-void Line::Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
+void Line::Print(HDC hdc, Field& field, int size, int koef, const Pos& p1, const Pos& p2 )
 {
 	HPEN hPen = CreatePen(PS_SOLID, size, color);
 	SelectObject(hdc, hPen);
@@ -54,11 +61,13 @@ void Line::Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
 	DeleteObject(hPen);
 
 	int x1 = p1.GetX(), y1 = p1.GetY(), x2 = p2.GetX(), y2 = p2.GetY();
-
+	x1 = x1 / koef;
+	x2 = x2 / koef;
+	int size1 = size / koef;
 	for (int i = min(x1, x2); i <= max(x1, x2); i++)
-	{
+	{ 
 		int y = y1 + (i - x1) * (y2 - y1) / abs(x2 - x1);
-		for (int j = y - size / 2; j <= y + size / 2; j++)
+		for (int j = y - size1 / 2; j <= y + size1 / 2; j++)
 		{
 			if ((i >= 0) && (j >= 0) && (i < W_SIZE) && (j < W_SIZE))
 			{
@@ -68,7 +77,7 @@ void Line::Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
 	}
 }
 
-void Rect:: Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
+void Rect:: Print(HDC hdc, Field& field, int size, int koef, const Pos& p1, const Pos& p2 )
 {
 	HBRUSH hBrush;
 	hBrush = CreateSolidBrush(color);
@@ -76,7 +85,7 @@ void Rect:: Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
 	FillRect(hdc, &l, hBrush);
 	DeleteObject(hBrush);
 
-	int x1 = p1.GetX(), y1 = p1.GetY(), x2 = p2.GetX(), y2 = p2.GetY();
+	int x1 = p1.GetX()/koef, y1 = p1.GetY()/koef, x2 = p2.GetX()/koef, y2 = p2.GetY()/koef;
 	for (int i = min(x1, x2); i <= max(x2, x1); i++)
 	{
 		for (int j = min(y1, y2); j <= max(y2, y1); j++)
@@ -89,7 +98,7 @@ void Rect:: Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
 	}
 }
 
-void Circle:: Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
+void Circle:: Print(HDC hdc, Field& field, int size, int koef, const Pos& p1, const Pos& p2 )
 {
 	HBRUSH hBrush = CreateSolidBrush(color);
 	SelectObject(hdc, hBrush);
@@ -99,7 +108,7 @@ void Circle:: Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 )
 	DeleteObject(hBrush);
 	DeleteObject(hPen);
 
-	double x1 = p1.GetX(), y1 = p1.GetY(), x2 = p2.GetX(), y2 = p2.GetY();
+	double x1 = p1.GetX()/koef, y1 = p1.GetY() / koef, x2 = p2.GetX() / koef, y2 = p2.GetY() / koef;
 
 	for (double i = min(x1, x2); i <= max(x2, x1); i++)
 	{

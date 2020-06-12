@@ -5,33 +5,32 @@ using namespace std;
 #include <vector>
 #include "Pos.h"
 
-using Field = vector<vector<long>>;
+using Field = vector<vector<long> > ;
 
-const int W_SIZE = 1000;
-
-const long BLACK = RGB(0, 0, 0);
-const long GREY = RGB(128, 128, 128);
-const long WHITE = RGB(255, 255, 255);
-const long RED = RGB(255, 0, 0);
+const long BLACK  = RGB(0, 0, 0);
+const long GREY   = RGB(128, 128, 128);
+const long WHITE  = RGB(255, 255, 255);
+const long RED    = RGB(255, 0, 0);
 const long ORANGE = RGB(255, 128, 0);
 const long YELLOW = RGB(255, 255, 0);
-const long GREEN = RGB(0, 255, 0);
-const long BLUE = RGB(0, 0, 128);
-const long SEA = RGB(0, 0, 255);
+const long GREEN  = RGB(0, 255, 0);
+const long BLUE   = RGB(0, 0, 128);
+const long SEA    = RGB(0, 0, 255);
 const long PURPLE = RGB(255, 0, 255);
 
-//zoom koef
 class Brush
 {
 protected:
 	//vector<Pos> vecPos;
-	int size = 6;
-	int koef = 1;//zoom
+	//int size = 6;
+	//int koef = 1;//zoom
 	long color = WHITE;
 
 public:
-	virtual void Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 = { 0,0 }) = 0;
+	virtual void Print(HDC hdc, Field& field, int size, int koef, const Pos& p1, const Pos& p2 = { 0,0 }) = 0;
 	void SetColor(long c) { color = c; }
+	
+	//void ChangeSize(int delt) { size += delt; }
 	//change size/
 	//if zoom change koef
 };
@@ -45,13 +44,13 @@ public:
 	{
 		color = col;
 	}
-	void Print(HDC hdc, Field& field, const Pos& p, const Pos& p2 = { 0,0 });
+	void Print(HDC hdc, Field& field, int size, int koef, const Pos& p, const Pos& p2 = { 0,0 });
 };
 
 class Eraser : public Brush
 {
 public:
-	void Print(HDC hdc, Field& field, const Pos& p, const Pos& p2 = { 0,0 });
+	void Print(HDC hdc, Field& field, int size, int koef, const Pos& p, const Pos& p2 = { 0,0 });
 };
 
 class Line : public Brush
@@ -62,7 +61,7 @@ public:
 	{
 		color = col;
 	}
-	void Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 = { 0,0 });
+	void Print(HDC hdc, Field& field, int size, int koef, const Pos& p1, const Pos& p2 = { 0,0 });
 };
 
 class Rect : public Brush
@@ -73,7 +72,7 @@ public:
 	{
 		color = col;
 	}
-	void Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 = { 0,0 });
+	void Print(HDC hdc, Field& field, int size, int koef, const Pos& p1, const Pos& p2 = { 0,0 });
 };
 
 class Circle : public Brush
@@ -84,5 +83,5 @@ public:
 	{
 		color = col;
 	}
-	void Print(HDC hdc, Field& field, const Pos& p1, const Pos& p2 = { 0,0 });
+	void Print(HDC hdc, Field& field, int size, int koef, const Pos& p1, const Pos& p2 = { 0,0 });
 };
