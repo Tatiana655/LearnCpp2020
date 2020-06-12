@@ -1,5 +1,6 @@
 #pragma once
 using namespace std;
+#include "framework.h"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -35,7 +36,7 @@ istream& operator>> (istream& fin, Color& c)
 	return fin;
 }
 
-class Rectw
+class Rect
 {
 	string name;
 	vector<int> x;
@@ -43,9 +44,9 @@ class Rectw
 	Color c;
 
 public:
-	friend istream& operator>> (istream& fin, Rectw& r);
+	friend istream& operator>> (istream& fin, Rect& r);
 
-	Rectw(string sname = "", Color color = { 255,255,255 }, vector<int> vx = {}, vector<int> vy = {})
+	Rect(string sname = "", Color color = { 255,255,255 }, vector<int> vx = {}, vector<int> vy = {})
 	{
 		c = color;
 		name = sname;
@@ -66,7 +67,7 @@ public:
 	void PrintRect(HDC hdc);
 };
 
-istream& operator>> (istream& fin, Rectw& r)
+istream& operator>> (istream& fin, Rect& r)
 {
 	string buff;
 	int t;
@@ -93,13 +94,13 @@ istream& operator>> (istream& fin, Rectw& r)
 
 class Button
 {
-	Rectw bBase;
-	Rectw hLight;
+	Rect bBase;
+	Rect hLight;
 public:
 
-	Rectw GetBBase() { return bBase; }
+	Rect GetBBase() { return bBase; }
 
-	Button(Rectw rect, Color hightlight = { 0, 0, 0 })
+	Button(Rect rect, Color hightlight = { 0, 0, 0 })
 	{
 		bBase = rect;
 		hLight = rect;
@@ -122,12 +123,12 @@ public:
 
 class Menu
 {
-	Rectw mBase;
-	vector<Rectw> opt;
+	Rect mBase;
+	vector<Rect> opt;
 public:
-	Rectw GetMBase() { return mBase; }
+	Rect GetMBase() { return mBase; }
 
-	Menu(Rectw rect) { mBase = rect; opt = {}; }
+	Menu(Rect rect) { mBase = rect; opt = {}; }
 
 	void AddOpt(string name);
 
@@ -150,14 +151,14 @@ public:
 
 class WindowMenu
 {
-	Rectw wBase;
+	Rect wBase;
 	vector<Menu> menu;
 	vector<Button> but;
 public:
 
-	Rectw GetWBase() { return wBase; }
+	Rect GetWBase() { return wBase; }
 
-	WindowMenu(Rectw rect) { wBase = rect; menu = {}; but = {}; }
+	WindowMenu(Rect rect) { wBase = rect; menu = {}; but = {}; }
 
 	void AddMenu(Menu m) { menu.push_back(m); }
 
@@ -186,149 +187,6 @@ public:
 
 	void Init(string filename);
 
-	string AllSys(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-	{
-		string s = "";
-		HDC hdc = GetDC(hWnd);
-		switch (message)
-		{
-		case WM_LBUTTONDOWN:
-		{
-			HDC hdc = GetDC(hWnd);
-
-			int x = LOWORD(lParam); //узнаём координаты
-			int y = HIWORD(lParam);
-
-			s = Change(x, y, hdc);
-			return s;
-		}
-		break;
-		case WM_LBUTTONUP:
-		{
-			HDC hdc = GetDC(hWnd);
-			PrintSystem(hdc);
-		}
-		break;
-		}
-		return s;
-	}
+	string AllSys(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 
-void Rectw::PrintRect(HDC hdc)
-{
-	HBRUSH hBrush;
-	hBrush = CreateSolidBrush(RGB(c.GetR(), c.GetG(), c.GetB()));
-	RECT l = { x[0], y[0], x[1], y[1] };
-	FillRect(hdc, &l, hBrush);
-	TextOutA(hdc, x[0] + abs(x[1] - x[0]) / 4, y[1] - 10, name.c_str(), name.size());
-}
-
-void Menu::AddOpt(string name)
-{
-	vector<int> vy;
-	if (opt.empty()) vy = mBase.GetY();
-	else vy = (opt[opt.size() - 1]).GetY();
-	vy[0] = vy[0] + abs(vy[0] - vy[1]);
-	vy[1] = vy[1] + abs(vy[1] - vy[0]);
-	Color c = mBase.GetColor();
-	Rectw(name, c, mBase.GetX(), vy);
-}
-
-void WindowMenu::PrintWindow(HDC hdc)
-{
-	wBase.PrintRect(hdc);
-	for (auto w : menu)
-	{
-		w.PrintMenu(hdc);
-	}
-	for (auto w : but)
-	{
-		w.PrintBut(hdc);
-	}
-}
-
-string WindowMenu::Change(int cx, int cy, HDC hdc)// return string button
-{
-	for (auto w : but)
-	{
-		if (w.check(cx, cy) == true) { w.PrintHigthBut(hdc); return w.GetBBase().GetName(); }
-	}
-
-	for (auto w : menu)
-	{
-
-		if (w.check(cx, cy) == true) { w.PrintOpt(hdc); return w.GetMBase().GetName(); }
-	}
-	return "";
-}
-
-string System::Change(int cx, int cy, HDC hdc)
-{
-	for (auto u : w)
-	{
-		if(u.check(cx,cy))
-			return u.Change(cx, cy, hdc);
-	}
-	return "";
-}
-
-void System::Init(string filename)
-{
-	string buff;
-	vector<WindowMenu> BW;
-	ifstream fin(filename);
-	fin >> buff;
-	if (buff == "Start")
-	{
-		while (buff != "End")
-		{
-			fin >> buff;
-			if (buff == "WindowBegin")
-			{
-				string name;
-
-				vector<int> x, y;
-				Color c;
-				Rectw r;
-				fin >> r;//r.FileRect(fin);
-				WindowMenu Wind(r);
-				while (buff != "WindowEnd")
-				{
-					fin >> buff;
-					if (buff == "ButtonBegin")
-					{
-						Rectw r;
-						Color c;
-						fin >> r;//r.FileRect(fin);
-						while (buff != "ButtonEnd")
-						{
-							int t;
-
-							fin >> buff;
-							if (buff == "HightLight") fin >> c;//{ fin >> t; c.SetR(t); fin >> t; c.SetG(t); fin >> t; c.SetB(t); }
-
-
-						}
-						Button button(r, c);
-						Wind.AddButton(button);
-					}
-					if (buff == "MenuBegin")
-					{
-						Rectw r;
-						fin >> r;// r.FileRect(fin);
-						Menu m(r);
-						while (buff != "MenuEnd")
-						{
-							string t;
-							fin >> buff;
-							if (buff == "Options") { fin >> t; m.AddOpt(t); }
-						}
-						Wind.AddMenu(m);
-					}
-
-				}
-				w.push_back(Wind);
-			}
-		}
-	}
-}
