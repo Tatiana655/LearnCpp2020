@@ -1,6 +1,6 @@
 #include "Window.h"
 
-void Window:: PrintRect(HDC hdc, long color, int x1, int y1, int x2, int y2)
+void Window::PrintRect(HDC hdc, long color, int x1, int y1, int x2, int y2)
 {
 	HBRUSH hBrush;
 	hBrush = CreateSolidBrush(color);
@@ -71,86 +71,59 @@ void Window::PrintSomething(HDC hdc, const Pos& p1)
 void Window::changeStat(HDC hdc, Pos& p)
 {
 	int x = p.GetX(), y = p.GetY();
-	if (x <= W_SIZE * koef + ICON_SIZE * koef)
-	{
-		int num = y / ICON_SIZE;
-		switch (num)
-		{
-		case 0:
-			color = BLACK;
-			break;
-		case 1:
-			color = GREY;
-			break;
-		case 2:
-			color = WHITE;
-			break;
-		case 3:
-			color = RED;
-			break;
-		case 4:
-			color = ORANGE;
-			break;
-		case 5:
-			color = YELLOW;
-			break;
-		case 6:
-			color = GREEN;
-			break;
-		case 7:
-			color = BLUE;
-			break;
-		case 8:
-			color = SEA;
-			break;
-		case 9:
-			color = PURPLE;
-			break;
-		case 10:
-			obj = PEN;
-			break;
-		case 11:
-			obj = ERASER;
-			break;
-		case 12:
-			obj = LINE;
-			break;
-		case 13:
-			obj = CIRCLE;
-			break;
-		case 14:
-			obj = RECTANGLE;
-			break;
-		case 15:
-			//obj = ZOOM_IN;
-			size *= 2;
-			koef *= 2;
-			PrintWindow(hdc);
-			PrintField(hdc);
-			break;
-		case 16:
-			//obj = ZOOM_OUT;
-			if (koef != 1)
-			{
-				size /= 2;
-				koef /= 2;
-			}
-			PrintWindow(hdc);
-			PrintField(hdc);
-			//reprint
-			//size ++// mb parametr for func// unclear yet// mb a few brush and change all // ptr??
-			break;
-		case 17:
-			size += 2 * koef;
-			break;
-		case 18:
-			if (size > 0)
-				size -= 2 * koef;
-			break;
-		default:
-			break;
-		}
-	}
+	string s = sys.Change(x, y, hdc);
+
+	if (s.compare("BLACK") == 0) color = BLACK;
+	else
+		if (s.compare("GREY") == 0) color = GREY;
+		else
+			if (s.compare("WHITE") == 0) color = WHITE;
+			else
+				if (s.compare("RED") == 0) color = RED;
+				else
+					if (s.compare("ORANGE") == 0) color = ORANGE;
+					else
+						if (s.compare("YELLOW") == 0) color = YELLOW;
+						else
+							if (s.compare("GREEN") == 0) color = GREEN;
+							else
+								if (s.compare("BLUE") == 0) color = BLUE;
+								else
+									if (s.compare("SEA") == 0) color = SEA;
+									else
+										if (s.compare("PURPLE") == 0) color = PURPLE;
+										else
+											if (s.compare("PEN") == 0) obj = PEN;
+											else
+												if (s.compare("ERASER") == 0) obj = ERASER;
+												else
+													if (s.compare("LINE") == 0) obj = LINE;
+													else
+														if (s.compare("CIRCLE") == 0) obj = CIRCLE;
+														else
+															if (s.compare("RECTANGLE") == 0) obj = RECTANGLE;
+															else
+																if (s.compare("ZOOM_IN") == 0) {
+																	size *= 2;
+																	koef *= 2;
+																	PrintWindow(hdc);
+																	PrintField(hdc);
+																}
+																else
+																	if (s.compare("ZOOM_OUT") == 0) {
+																		if (koef != 1)
+																		{
+																			size /= 2;
+																			koef /= 2;
+																		}
+																		PrintWindow(hdc);
+																		PrintField(hdc);
+																	}
+																	else
+																		if (s.compare("SIZE+") == 0) size += 2 * koef;
+																		else
+																			if (s.compare("SIZE-") == 0) if (size > 0) size -= 2 * koef;
+
 }
 
 void Window::PrintWindow(HDC hdc)
