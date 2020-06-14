@@ -1,6 +1,6 @@
 #pragma once
 using namespace std;
-#include "framework.h"
+#include <Windows.h>
 #include <vector>
 #include <string>
 #include <iostream>
