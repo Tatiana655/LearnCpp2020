@@ -27,52 +27,15 @@ void Window::PrintField(HDC hdc)
 		}
 	}
 }
-//if in window // no checks // print and remember
-void Window::PrintSomething(HDC hdc, const Pos& p1)
-{
-	switch (obj)
-	{
-	case PEN:
-	{
-		Pen pen(color);
-		pen.Print(hdc, field, size, koef, p1);
-	}
-	break;
-	case ERASER:
-	{
-		Eraser er;
-		er.Print(hdc, field, size, koef, p1);
-	}
-	break;
-	case LINE:
-	{
-		Line l(color);
-		l.Print(hdc, field, size, koef, buf, p1);
-	}
-	break;
-	case CIRCLE:
-	{
-		Circle circ(color);
-		circ.Print(hdc, field, size, koef, buf, p1);
-	}
-	break;
-	case RECTANGLE:
-	{
-		Rect r(color);
-		r.Print(hdc, field, size, koef, buf, p1);
-	}
-	break;
-	default:
-		break;
-	}
-}
+
 
 //change color or brush// if out window// with checks
 void Window::changeStat(HDC hdc, Pos& p)
 {
 	int x = p.GetX(), y = p.GetY();
 	string s = sys.Change(x, y, hdc);
-
+	Pen pen(color);
+	object = &pen;
 	if (s.compare("BLACK") == 0) color = BLACK;
 	else
 		if (s.compare("GREY") == 0) color = GREY;
@@ -93,15 +56,15 @@ void Window::changeStat(HDC hdc, Pos& p)
 									else
 										if (s.compare("PURPLE") == 0) color = PURPLE;
 										else
-											if (s.compare("PEN") == 0) obj = PEN;
+											if (s.compare("PEN") == 0) {delete object; object = new Pen(color); obj = PEN;}
 											else
-												if (s.compare("ERASER") == 0) obj = ERASER;
+												if (s.compare("ERASER") == 0){delete object; object = new Eraser; obj = ERASER;} 
 												else
-													if (s.compare("LINE") == 0) obj = LINE;
+													if (s.compare("LINE") == 0) {delete object; object = new Line(color); obj = LINE;}
 													else
-														if (s.compare("CIRCLE") == 0) obj = CIRCLE;
+														if (s.compare("CIRCLE") == 0) {delete object; object = new Circle(color); obj = CIRCLE;}
 														else
-															if (s.compare("RECTANGLE") == 0) obj = RECTANGLE;
+															if (s.compare("RECTANGLE") == 0) {delete object; object = new Rect(color); obj = RECTANGLE;}
 															else
 																if (s.compare("ZOOM_IN") == 0) {
 																	size *= 2;
@@ -128,33 +91,7 @@ void Window::changeStat(HDC hdc, Pos& p)
 
 }
 
-//void Window::PrintWindow(HDC hdc)
-//{
-//	//основное окно
-//	PrintRect(hdc, WHITE, 0, 0, W_SIZE * koef, W_SIZE * koef);
-//	//цветные прямоугольники с меню
-//	vector<long> colors = { BLACK, GREY, WHITE, RED, ORANGE, YELLOW, GREEN, BLUE,  SEA, PURPLE };
-//	int i = 0;
-//	for (auto c : colors)
-//	{
-//		PrintRect(hdc, c, W_SIZE * koef, i * ICON_SIZE, (W_SIZE + ICON_SIZE) * koef, ((i + 1) * ICON_SIZE) * koef);
-//		i++;
-//	}
-//	for (i = 10; i < 19; i++)
-//	{
-//		string s = "";
-//		if (i == 10) s = "PEN";
-//		if (i == 11) s = "ERASER";
-//		if (i == 12) s = "Line";
-//		if (i == 13) s = "O";
-//		if (i == 14) s = "RECT";
-//		if (i == 15) s = "Z_IN";
-//		if (i == 16) s = "Z_OUT";
-//		if (i == 17) s = "+";
-//		if (i == 18) s = "-";
-//		TextOutA(hdc, W_SIZE * koef, ((i)*ICON_SIZE) * koef, s.c_str(), s.size());
-//	}
-//}
+
 void Window::clear()
 {
 	Field f(W_SIZE, vector<long>(W_SIZE, WHITE));
@@ -174,17 +111,18 @@ bool Window::Paint(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			POINT lpPoint;
 			Pos p;
 			GetCursorPos(&lpPoint);
-			p.SetX(LOWORD(lParam)); //узнаём координаты
+			p.SetX(LOWORD(lParam)); //СѓР·РЅР°С‘Рј РєРѕРѕСЂРґРёРЅР°С‚С‹
 			p.SetY(HIWORD(lParam));
-			PrintSomething(hdc, p);
+			object->Print(hdc, field, size, koef, p);
+			//PrintSomething(hdc, p);
 		}
 	}
 	break;
 	case WM_LBUTTONDOWN:
 	{
-		//получить клик, проверить статус и границы клика, если надо то сохрани клик и жди следующего, потом рисуй с заменой статуса.
+		//РїРѕР»СѓС‡РёС‚СЊ РєР»РёРє, РїСЂРѕРІРµСЂРёС‚СЊ СЃС‚Р°С‚СѓСЃ Рё РіСЂР°РЅРёС†С‹ РєР»РёРєР°, РµСЃР»Рё РЅР°РґРѕ С‚Рѕ СЃРѕС…СЂР°РЅРё РєР»РёРє Рё Р¶РґРё СЃР»РµРґСѓСЋС‰РµРіРѕ, РїРѕС‚РѕРј СЂРёСЃСѓР№ СЃ Р·Р°РјРµРЅРѕР№ СЃС‚Р°С‚СѓСЃР°.
 		Pos p;
-		p.SetX(LOWORD(lParam)); //узнаём координаты
+		p.SetX(LOWORD(lParam)); //СѓР·РЅР°С‘Рј РєРѕРѕСЂРґРёРЅР°С‚С‹
 		p.SetY(HIWORD(lParam));
 
 		if (p.InWind())
@@ -195,13 +133,13 @@ bool Window::Paint(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					buf = p;
 				else
 				{
-					PrintSomething(hdc, p);
+					object->Print(hdc, field, size, koef, p);
 					buf = { -1,-1 };
 				}
 			}
 			else
 			{
-				PrintSomething(hdc, p);
+				object->Print(hdc, field, size, koef, p);
 			}
 		}
 		else
@@ -226,8 +164,8 @@ bool Window::Paint(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void Window::Save(string filename)
 {
-	ofstream out;          // поток для записи
-	out.open(filename); // окрываем файл для записи
+	ofstream out;          // РїРѕС‚РѕРє РґР»СЏ Р·Р°РїРёСЃРё
+	out.open(filename); // РѕРєСЂС‹РІР°РµРј С„Р°Р№Р» РґР»СЏ Р·Р°РїРёСЃРё
 	if (out.is_open())
 	{
 		//out << "Hello World!" << std::endl;
