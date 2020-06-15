@@ -17,12 +17,12 @@ enum OBJ
 	MINUS
 };
 
-//+/-
 class Window
 {
 private:
 	Field field;
-	OBJ obj = PEN;
+	OBJ obj = PEN;// using for clicks 
+	Brush* object;
 	int size = 6;
 	int koef = 1;
 	Pos buf;
@@ -32,16 +32,11 @@ private:
 	void SetBuf(Pos p) { buf = p; }
 	Pos  GetBuf() { return buf; }
 
-	OBJ const GetObj() { return obj; }
-
+	void SetColor(long col) { color = col; };
 	void PrintRect(HDC hdc, long color, int x1, int y1, int x2, int y2);
 
 	void PrintField(HDC hdc);
 
-	//if in window // no checks // print and remember
-	void PrintSomething(HDC hdc, const Pos& p1);
-
-	//change color or brush// if out window// with checks
 	void changeStat(HDC hdc, Pos& p);
 public:
 	Window()
@@ -49,10 +44,13 @@ public:
 		Field f(W_SIZE, vector<long>(W_SIZE, WHITE));
 		color = BLACK;
 		field = f;
-		sys.Init("C:\\txt\\c.txt");
+		object = new Pen(color);
 	}
 
-
+	~Window()
+	{
+		delete object;
+	}
 
 	void clear();
 
